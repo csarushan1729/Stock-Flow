@@ -145,24 +145,7 @@ inventory-system/
 
 ---
 
-## 🌐 Deployment
 
-### Backend — Render / Railway / Fly.io
-
-1. Push `backend/` to a GitHub repo
-2. Connect to Render/Railway/Fly.io
-3. Set environment variable: `DATABASE_URL=<your-postgres-url>`
-4. Deploy — the app auto-creates tables on startup
-
-### Frontend — Vercel / Netlify
-
-1. Push `frontend/` to a GitHub repo
-2. Connect to Vercel or Netlify
-3. Set build command: `npm run build`
-4. Set environment variable: `VITE_API_URL=https://your-backend-url.com`
-5. Deploy
-
----
 
 ## 🔧 Business Rules
 
