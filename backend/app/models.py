@@ -1,20 +1,31 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Text, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .database import Base
 
 
+class User(Base):
+    __tablename__ = "users"
+
+    id         = Column(Integer, primary_key=True, index=True)
+    full_name  = Column(String(255), nullable=False)
+    email      = Column(String(255), unique=True, nullable=False, index=True)
+    password   = Column(String(255), nullable=False)          # bcrypt hash
+    is_active  = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
 class Product(Base):
     __tablename__ = "products"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), nullable=False)
-    sku = Column(String(100), unique=True, nullable=False, index=True)
-    price = Column(Float, nullable=False)
-    quantity = Column(Integer, nullable=False, default=0)
+    id          = Column(Integer, primary_key=True, index=True)
+    name        = Column(String(255), nullable=False)
+    sku         = Column(String(100), unique=True, nullable=False, index=True)
+    price       = Column(Float, nullable=False)
+    quantity    = Column(Integer, nullable=False, default=0)
     description = Column(Text, nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at  = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at  = Column(DateTime(timezone=True), onupdate=func.now())
 
     order_items = relationship("OrderItem", back_populates="product")
 
@@ -22,10 +33,10 @@ class Product(Base):
 class Customer(Base):
     __tablename__ = "customers"
 
-    id = Column(Integer, primary_key=True, index=True)
-    full_name = Column(String(255), nullable=False)
-    email = Column(String(255), unique=True, nullable=False, index=True)
-    phone = Column(String(50), nullable=False)
+    id         = Column(Integer, primary_key=True, index=True)
+    full_name  = Column(String(255), nullable=False)
+    email      = Column(String(255), unique=True, nullable=False, index=True)
+    phone      = Column(String(50), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     orders = relationship("Order", back_populates="customer")
@@ -34,24 +45,24 @@ class Customer(Base):
 class Order(Base):
     __tablename__ = "orders"
 
-    id = Column(Integer, primary_key=True, index=True)
-    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False)
+    id           = Column(Integer, primary_key=True, index=True)
+    customer_id  = Column(Integer, ForeignKey("customers.id"), nullable=False)
     total_amount = Column(Float, nullable=False)
-    status = Column(String(50), nullable=False, default="pending")
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    status       = Column(String(50), nullable=False, default="pending")
+    created_at   = Column(DateTime(timezone=True), server_default=func.now())
 
     customer = relationship("Customer", back_populates="orders")
-    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
+    items    = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
 
 
 class OrderItem(Base):
     __tablename__ = "order_items"
 
-    id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
+    id         = Column(Integer, primary_key=True, index=True)
+    order_id   = Column(Integer, ForeignKey("orders.id"), nullable=False)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
-    quantity = Column(Integer, nullable=False)
+    quantity   = Column(Integer, nullable=False)
     unit_price = Column(Float, nullable=False)
 
-    order = relationship("Order", back_populates="items")
+    order   = relationship("Order", back_populates="items")
     product = relationship("Product", back_populates="order_items")
